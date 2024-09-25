@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit ,forwardRef } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, matDialogAnimations } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Contact } from '../../Models/contact';
 import { ContactService } from '../../Services/contact.service';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
+
+
+
+
 export interface contactFormGroup {
   name: FormControl<string>;
   phoneNumber?: FormControl<string>;
@@ -32,7 +36,7 @@ export interface contactFormGroup {
     CommonModule,
     MatSelectModule,
     MatButton,
-    MatDialogModule
+    MatDialogModule,
     
     
     
