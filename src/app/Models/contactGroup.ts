@@ -1,6 +1,6 @@
-export class ContactGroup {
-    id?: number;
-    name?: string='';
-    
-  }
-  
+import { BaseModel } from "./baseModel";
+
+export class ContactGroup extends BaseModel {
+  name?: string = '';
+
+}

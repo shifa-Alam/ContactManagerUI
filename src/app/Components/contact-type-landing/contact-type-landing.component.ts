@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { Contact } from '../../Models/contact';
+import { ContactType } from '../../Models/contactType';
+import { ContactTypeFilter } from '../../Models/Filters/contactTypeFilter';
+import { ContactTypeService } from '../../Services/contact-type.service';
+import { ContactTypeAddComponent } from '../contact-type-add/contact-type-add.component';
 import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component';
-import { ContactGroupFilter } from '../../Models/Filters/contactGroupFilter';
-import { ContactGroupService } from '../../Services/contact-group.service';
-import { ContactGroup } from '../../Models/contactGroup';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -14,10 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
-import { ContactGroupAddComponent } from '../contact-group-add/contact-group-add.component';
 
 @Component({
-  selector: 'app-contact-group-landing',
+  selector: 'app-contact-type-landing',
   standalone: true,
   imports: [
     MatTableModule,
@@ -31,16 +30,16 @@ import { ContactGroupAddComponent } from '../contact-group-add/contact-group-add
     MatProgressBar,
     MatPaginator
   ],
-  templateUrl: './contact-group-landing.component.html',
-  styleUrl: './contact-group-landing.component.css'
+  templateUrl: './contact-type-landing.component.html',
+  styleUrl: './contact-type-landing.component.css'
 })
-export class ContactGroupLandingComponent implements OnInit{
-  dataSource!: MatTableDataSource<ContactGroup>;
+export class ContactTypeLandingComponent implements OnInit {
+  dataSource!: MatTableDataSource<ContactType>;
   displayedColumns: string[] = [];
   isLoading: boolean = false;
-  filter: ContactGroupFilter = new ContactGroupFilter();
+  filter: ContactTypeFilter = new ContactTypeFilter();
   totalRecords: number = 0;
-  constructor(private service: ContactGroupService, public dialog: MatDialog) {
+  constructor(private service: ContactTypeService, public dialog: MatDialog) {
 
   }
 
@@ -48,10 +47,10 @@ export class ContactGroupLandingComponent implements OnInit{
   ngOnInit(): void {
     this.setColumn();
     this.initFilters();
-    this.getContactGroups();
+    this.getContactTypes();
   }
   setColumn() {
-    this.displayedColumns = [ 'id','name', 'createdDate','modifiedDate', 'action'];
+    this.displayedColumns = ['id', 'name', 'createdDate', 'modifiedDate', 'action'];
   }
   initFilters() {
 
@@ -61,27 +60,27 @@ export class ContactGroupLandingComponent implements OnInit{
 
 
   add() {
-    const dialogRef = this.dialog.open(ContactGroupAddComponent, {
+    const dialogRef = this.dialog.open(ContactTypeAddComponent, {
       position: { top: '100px' },
       data: {
-        contactGroup: new ContactGroup()
+        contactType: new ContactType()
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.getContactGroups();
+      this.getContactTypes();
     });
   }
-  edit(contactGroup: any) {
-    const dialogRef = this.dialog.open(ContactGroupAddComponent, {
+  edit(contactType: any) {
+    const dialogRef = this.dialog.open(ContactTypeAddComponent, {
       position: { top: '100px' },
       data: {
-        contactGroup: contactGroup
+        contactType: contactType
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.getContactGroups();
+      this.getContactTypes();
     });
 
   }
@@ -96,8 +95,8 @@ export class ContactGroupLandingComponent implements OnInit{
       dialogRef.afterClosed().subscribe(result => {
 
         if (result) {
-          this.service.deleteContactGroup(id).subscribe(result => {
-            this.getContactGroups();
+          this.service.deleteContactType(id).subscribe(result => {
+            this.getContactTypes();
           },
             error => console.error(error));
         }
@@ -105,19 +104,19 @@ export class ContactGroupLandingComponent implements OnInit{
     }
   }
   onNameChange(event: any) {
-    if (event)this.filter.name = event;
-    this.getContactGroups();
+    if (event) this.filter.name = event;
+    this.getContactTypes();
   }
-  
+
   pageChange(e: PageEvent) {
     this.filter.pageNumber = e.pageIndex + 1;
     this.filter.pageSize = e.pageSize;
-    this.getContactGroups();
+    this.getContactTypes();
 
   }
-  getContactGroups() {
+  getContactTypes() {
     this.isLoading = true;
-    this.service.getContactGroups(this.filter).subscribe(result => {
+    this.service.getContactTypes(this.filter).subscribe(result => {
       this.totalRecords = result.totalItemCount;
       this.dataSource = new MatTableDataSource(result.subset);
       this.isLoading = false;

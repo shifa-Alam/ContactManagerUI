@@ -65,7 +65,7 @@ export class ContactLandingComponent implements OnInit{
     const dialogRef = this.dialog.open(ContactAddComponent, {
       position: { top: '100px' },
       data: {
-        Contact: new Contact()
+        contact: new Contact()
       }
     });
 
@@ -73,11 +73,11 @@ export class ContactLandingComponent implements OnInit{
       this.getContacts();
     });
   }
-  edit(Contact: any) {
+  edit(contact: any) {
     const dialogRef = this.dialog.open(ContactAddComponent, {
-      position: { top: '10px' },
+      position: { top: '100px' },
       data: {
-        Contact: Contact
+        contact: contact
       }
     });
 

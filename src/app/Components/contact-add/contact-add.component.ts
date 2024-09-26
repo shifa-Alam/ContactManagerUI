@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, ReactiveFormsModule } 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Contact } from '../../Models/contact';
 import { ContactService } from '../../Services/contact.service';
-import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
+import {   MatFormFieldModule } from '@angular/material/form-field';
 import { MatOption } from '@angular/material/core';
 import { ContactTypeService } from '../../Services/contact-type.service';
 import { ContactGroupService } from '../../Services/contact-group.service';
@@ -12,7 +12,7 @@ import { ContactGroup } from '../../Models/contactGroup';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import {MatDialogModule} from '@angular/material/dialog';
 
 
@@ -29,16 +29,12 @@ export interface contactFormGroup {
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatFormField,
+    CommonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatOption,
-    CommonModule,
     MatSelectModule,
-    MatButton,
-    MatDialogModule,
-    
-    
+    MatButtonModule
+
     
   ],
 
@@ -118,7 +114,7 @@ export class ContactAddComponent implements OnInit {
     }
   }
   loadTypes() {
-    this.typeService.getContactTypes().subscribe(result => {
+    this.typeService.getAll().subscribe(result => {
       this.contactTypes = result;
       console.log(result);
     },
@@ -128,7 +124,7 @@ export class ContactAddComponent implements OnInit {
   }
 
   loadGroups() {
-    this.groupService.getContactGroups().subscribe(result => {
+    this.groupService.getAll().subscribe(result => {
       this.contactGroups = result;
     },
       error => {
