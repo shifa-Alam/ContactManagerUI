@@ -1,16 +1,38 @@
 <div class="row">
-    <div class="col-5">
+    <div class="col-3">
       <mat-form-field class="example-full-width">
-        <input matInput [value]="filter.name" (ngModelChange)="onNameChange($event)" placeholder="Search by name" />
+        <input matInput  [ngModel]="filter.name" (ngModelChange)="onNameChange($event)" placeholder="Search by name" />
       </mat-form-field>
     </div>
-    <div class="col-5">
+    <div class="col-3">
       <mat-form-field class="example-full-width">
-        <input matInput [value]="filter.phoneNumber" (ngModelChange)="onMobileChange($event)" placeholder="Search by phone" />
+        <input matInput  [ngModel]="filter.phoneNumber" (ngModelChange)="onMobileChange($event)" placeholder="Search by phone" />
+      </mat-form-field>
+    </div>
+    <div class="col-2">
+      <mat-form-field class="example-full-width">
+        <mat-label>Contact Type</mat-label>
+        <mat-select (selectionChange)="onContactTypeChange($event.value)" >
+          <mat-option value="0">None</mat-option>
+          @for (food of contactTypes; track food) {
+            <mat-option [value]="food.id">{{food.name}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="col-2">
+      <mat-form-field class="example-full-width">
+        <mat-label>Group</mat-label>
+        <mat-select (selectionChange)="onContactGroupChange($event.value)">
+          <mat-option value="0">None</mat-option>
+          @for (food of contactGroups; track food) {
+            <mat-option [value]="food.id">{{food.name}}</mat-option>
+          }
+        </mat-select>
       </mat-form-field>
     </div>
   
-    <div class="col-2" style="padding-top: 15px;">
+    <div class="col-2" style="padding-top: 15px; text-align: center;">
       <button mat-mini-fab color="primary" (click)="add()">
         <mat-icon>add</mat-icon>
       </button>

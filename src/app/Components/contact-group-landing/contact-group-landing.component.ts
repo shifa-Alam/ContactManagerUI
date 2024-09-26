@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { ContactGroupAddComponent } from '../contact-group-add/contact-group-add.component';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-contact-group-landing',
@@ -29,7 +30,8 @@ import { ContactGroupAddComponent } from '../contact-group-add/contact-group-add
     MatCardModule,
     CommonModule,
     MatProgressBar,
-    MatPaginator
+    MatPaginator,
+    FormsModule
   ],
   templateUrl: './contact-group-landing.component.html',
   styleUrl: './contact-group-landing.component.css'

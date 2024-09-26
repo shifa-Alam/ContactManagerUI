@@ -14,6 +14,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-contact-type-landing',
@@ -28,7 +29,8 @@ import { MatProgressBar } from '@angular/material/progress-bar';
     MatCardModule,
     CommonModule,
     MatProgressBar,
-    MatPaginator
+    MatPaginator,
+    FormsModule
   ],
   templateUrl: './contact-type-landing.component.html',
   styleUrl: './contact-type-landing.component.css'
@@ -105,6 +107,7 @@ export class ContactTypeLandingComponent implements OnInit {
   }
   onNameChange(event: any) {
     if (event) this.filter.name = event;
+   
     this.getContactTypes();
   }
 

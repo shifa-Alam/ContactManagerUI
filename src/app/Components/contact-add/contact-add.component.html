@@ -2,12 +2,14 @@
   <div class="row">
     <div class="col-6">
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Name" formControlName="name" />
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Name" formControlName="name" required/>
       </mat-form-field>
     </div>
     <div class="col-6">
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Phone" formControlName="phoneNumber" />
+        <mat-label>Phone Number</mat-label>
+        <input matInput placeholder="Phone" formControlName="phoneNumber"required/>
       </mat-form-field>
     </div>
 
@@ -16,6 +18,7 @@
   <div class="row">
     <div class="col-6">
       <mat-form-field class="example-full-width">
+        <mat-label> Select Type</mat-label>
         <mat-select placeholder="Type" formControlName="contactTypeId">
           
           <mat-option *ngFor="let type of contactTypes" [value]="type.id">
@@ -26,6 +29,7 @@
     </div>
     <div class="col-6">
       <mat-form-field class="example-full-width">
+        <mat-label> Select Group</mat-label>
         <mat-select placeholder="Group" formControlName="contactGroupId">
           
           <mat-option *ngFor="let group of contactGroups" [value]="group.id">

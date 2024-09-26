@@ -14,6 +14,12 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { ContactAddComponent } from '../contact-add/contact-add.component';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component';
+import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { ContactGroupService } from '../../Services/contact-group.service';
+import { ContactTypeService } from '../../Services/contact-type.service';
+import { ContactGroup } from '../../Models/contactGroup';
+import { ContactType } from '../../Models/contactType';
 @Component({
   selector: 'app-contact-landing',
   standalone: true,
@@ -27,31 +33,61 @@ import { DeleteDialogComponent } from '../delete-dialog/delete-dialog.component'
     MatCardModule,
     CommonModule,
     MatProgressBar,
-    MatPaginator
-    
+    MatPaginator,
+    FormsModule,
+    MatSelectModule
+
 
   ],
   templateUrl: './contact-landing.component.html',
   styleUrl: './contact-landing.component.css'
 })
-export class ContactLandingComponent implements OnInit{
+export class ContactLandingComponent implements OnInit {
+
   dataSource!: MatTableDataSource<Contact>;
   displayedColumns: string[] = [];
   isLoading: boolean = false;
   filter: ContactFilter = new ContactFilter();
   totalRecords: number = 0;
-  constructor(private service: ContactService, public dialog: MatDialog) {
+  contactTypes: ContactType[] = [];
+  contactGroups: ContactGroup[] = [];
+
+  constructor(
+    private service: ContactService,
+    public typeService: ContactTypeService,
+    public groupService: ContactGroupService,
+    public dialog: MatDialog) {
 
   }
 
 
   ngOnInit(): void {
+    this.loadTypes();
+    this.loadGroups();
     this.setColumn();
     this.initFilters();
     this.getContacts();
   }
+  loadTypes() {
+    this.typeService.getAll().subscribe(result => {
+      this.contactTypes = result;
+      console.log(result);
+    },
+      error => {
+      }
+    );
+  }
+
+  loadGroups() {
+    this.groupService.getAll().subscribe(result => {
+      this.contactGroups = result;
+    },
+      error => {
+      }
+    );
+  }
   setColumn() {
-    this.displayedColumns = [ 'id','name', 'phoneNumber','type','group', 'action'];
+    this.displayedColumns = ['id', 'name', 'phoneNumber', 'type', 'group', 'action'];
   }
   initFilters() {
 
@@ -113,6 +149,16 @@ export class ContactLandingComponent implements OnInit{
   onMobileChange(event: any) {
     if (event)
       this.filter.phoneNumber = event;
+    this.getContacts();
+  }
+  onContactTypeChange(event: any){
+    if (event)
+      this.filter.contactTypeId = event;
+    this.getContacts();
+  }
+  onContactGroupChange(event: any){
+    if (event)
+      this.filter.contactGroupId = event;
     this.getContacts();
   }
   pageChange(e: PageEvent) {
