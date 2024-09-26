@@ -41,6 +41,7 @@ export class ContactTypeLandingComponent implements OnInit {
   isLoading: boolean = false;
   filter: ContactTypeFilter = new ContactTypeFilter();
   totalRecords: number = 0;
+  isInlineEdit: boolean = false;
   constructor(private service: ContactTypeService, public dialog: MatDialog) {
 
   }
@@ -59,8 +60,17 @@ export class ContactTypeLandingComponent implements OnInit {
     this.filter.name = "";
   }
 
+  inlineEdit(event: any) {
+    event.inlineEdit = true;
+    console.log(event)
+  }
+  inlineUpdate(event: any) {
+    event.inlineEdit = false;
+    this.service.updateContactType(event).subscribe(result => {
 
-
+    },
+      error => console.error(error));
+  }
   add() {
     const dialogRef = this.dialog.open(ContactTypeAddComponent, {
       position: { top: '100px' },
@@ -107,7 +117,7 @@ export class ContactTypeLandingComponent implements OnInit {
   }
   onNameChange(event: any) {
     if (event) this.filter.name = event;
-   
+
     this.getContactTypes();
   }
 

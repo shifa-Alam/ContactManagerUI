@@ -24,9 +24,15 @@
         <td mat-cell *matCellDef="let i=index"> {{i+1}} </td>
     </ng-container>
 
-    <ng-container matColumnDef="name">
+    
+
+    <ng-container matColumnDef="name" >
         <th mat-header-cell *matHeaderCellDef> Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+        
+        <td mat-cell *matCellDef="let element">
+            <span *ngIf="!element.inlineEdit">{{element.name}} </span>
+            <input matInput placeholder="Name"  [(ngModel)]="element.name"  *ngIf="element.inlineEdit">
+        </td>
     </ng-container>
 
 
@@ -44,10 +50,15 @@
     <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Action </th>
         <td mat-cell *matCellDef="let element">
-            <button mat-icon-button color="primary" (click)="edit(element)">
+            <button mat-icon-button color="primary" (click)="inlineEdit(element)"*ngIf="!element.inlineEdit">
                 <mat-icon>edit</mat-icon>
             </button>
-
+            <button mat-icon-button color="primary" (click)="inlineUpdate(element)" *ngIf="element.inlineEdit">
+                <mat-icon>check_circle</mat-icon>
+            </button>
+            <!-- <button mat-icon-button color="primary" (click)="edit(element)">
+                <mat-icon>edit</mat-icon>
+            </button> -->
             <button mat-icon-button color="warn" (click)="delete(element.id)">
                 <mat-icon>delete</mat-icon>
             </button>
