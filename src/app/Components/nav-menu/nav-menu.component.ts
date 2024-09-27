@@ -6,6 +6,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatList, MatListItem, MatNavList } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-nav-menu',
   standalone: true,
@@ -19,7 +20,8 @@ import { CommonModule } from '@angular/common';
     RouterModule,
     MatIcon,
     MatList,
-    MatListItem
+    MatListItem,
+    MatButtonModule
    
 
   ],

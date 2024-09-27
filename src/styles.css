@@ -1,6 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Provide sufficient contrast against white background */
+/* styles.css or styles.scss */
+.custom-snackbar-success {
+  text-align: center;
+  font-style: italic;
+  font-family: sans-serif;
+  
+  color: white;
+    --mdc-snackbar-container-color: #4caf50 !important;
+}
+
+.custom-snackbar-error {
+  text-align: center;
+  font-style: italic;
+  color: white;
+    --mdc-snackbar-container-color: #FF005D !important;
+}
 a {
     color: #0366d6;
   }

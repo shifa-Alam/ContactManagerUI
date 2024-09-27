@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { SnackbarService } from '../../Services/snackbar.service';
 
 
 
@@ -36,6 +37,7 @@ export class ContactTypeAddComponent implements OnInit {
 
 
   constructor(
+    private snackbarService: SnackbarService,
     public service: ContactTypeService,
     public fb: FormBuilder,
     public dialogRef: MatDialogRef<contactTypeForm>,
@@ -47,7 +49,7 @@ export class ContactTypeAddComponent implements OnInit {
   }
   ngOnInit(): void {
 
-    this.dialogRef.updateSize('75%')
+    this.dialogRef.updateSize('50%')
     this.createContactTypeForm();
     this.setValue();
 
@@ -75,19 +77,26 @@ export class ContactTypeAddComponent implements OnInit {
 
 
     if (this.contactType.id) {
-      this.service.updateContactType(this.contactType).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
-
+      this.service.updateContactType(this.contactType).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess("Update Successfully");
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.error);
+        }
+      });
     } else {
 
-      this.service.saveContactType(this.contactType).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
-
-
+      this.service.saveContactType(this.contactType).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess('Sucessfully Added');
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.error);
+        }
+      });
     }
   }
 

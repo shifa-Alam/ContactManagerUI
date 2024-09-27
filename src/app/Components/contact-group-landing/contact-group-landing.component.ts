@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { ContactGroupAddComponent } from '../contact-group-add/contact-group-add.component';
 import { FormsModule } from '@angular/forms';
+import { SnackbarService } from '../../Services/snackbar.service';
 
 @Component({
   selector: 'app-contact-group-landing',
@@ -36,13 +37,17 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './contact-group-landing.component.html',
   styleUrl: './contact-group-landing.component.css'
 })
-export class ContactGroupLandingComponent implements OnInit{
+export class ContactGroupLandingComponent implements OnInit {
   dataSource!: MatTableDataSource<ContactGroup>;
   displayedColumns: string[] = [];
   isLoading: boolean = false;
   filter: ContactGroupFilter = new ContactGroupFilter();
   totalRecords: number = 0;
-  constructor(private service: ContactGroupService, public dialog: MatDialog) {
+  constructor(
+    private snackbarService: SnackbarService,
+    private service: ContactGroupService,
+    public dialog: MatDialog
+  ) {
 
   }
 
@@ -53,7 +58,7 @@ export class ContactGroupLandingComponent implements OnInit{
     this.getContactGroups();
   }
   setColumn() {
-    this.displayedColumns = [ 'id','name', 'createdDate','modifiedDate', 'action'];
+    this.displayedColumns = ['id', 'name', 'createdDate', 'modifiedDate', 'action'];
   }
   initFilters() {
 
@@ -89,28 +94,31 @@ export class ContactGroupLandingComponent implements OnInit{
   }
 
   delete(id: number) {
-    if (id) {
+    if (id > 0) {
       const dialogRef = this.dialog.open(DeleteDialogComponent, {
         position: { top: '10px' },
-        // width:'20%'
+
       });
 
       dialogRef.afterClosed().subscribe(result => {
 
         if (result) {
-          this.service.deleteContactGroup(id).subscribe(result => {
-            this.getContactGroups();
-          },
-            error => console.error(error));
+          this.service.deleteContactGroup(id).subscribe({
+            next: () => {
+              this.getContactGroups();
+            }, error: (error: any) => {
+              this.snackbarService.openError(error.error);
+            }
+          });
         }
       });
     }
   }
   onNameChange(event: any) {
-    if (event)this.filter.name = event;
+    if (event) this.filter.name = event;
     this.getContactGroups();
   }
-  
+
   pageChange(e: PageEvent) {
     this.filter.pageNumber = e.pageIndex + 1;
     this.filter.pageSize = e.pageSize;
@@ -119,16 +127,16 @@ export class ContactGroupLandingComponent implements OnInit{
   }
   getContactGroups() {
     this.isLoading = true;
-    this.service.getContactGroups(this.filter).subscribe(result => {
-      this.totalRecords = result.totalItemCount;
-      this.dataSource = new MatTableDataSource(result.subset);
-      this.isLoading = false;
-      console.log(result.subset);
-    },
-      error => {
+    this.service.getContactGroups(this.filter).subscribe({
+      next: (res: any) => {
+        this.totalRecords = res.totalItemCount;
+        this.dataSource = new MatTableDataSource(res.subset);
+        this.isLoading = false;
+      },
+      error: (error: any) => {
         this.dataSource = new MatTableDataSource();
         this.isLoading = false;
       }
-    );
+    });
   }
 }

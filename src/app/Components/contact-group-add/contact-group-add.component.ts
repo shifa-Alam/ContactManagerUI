@@ -6,12 +6,10 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { Contact } from '../../Models/contact';
 import { ContactGroup } from '../../Models/contactGroup';
-import { ContactType } from '../../Models/contactType';
 import { ContactGroupService } from '../../Services/contact-group.service';
-import { ContactTypeService } from '../../Services/contact-type.service';
-import { ContactService } from '../../Services/contact.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SnackbarService } from '../../Services/snackbar.service';
 
 export interface contactGroupForm {
   name: FormControl<string>;
@@ -32,15 +30,16 @@ export interface contactGroupForm {
   styleUrl: './contact-group-add.component.css'
 })
 export class ContactGroupAddComponent implements OnInit {
-
   contactGroup: ContactGroup = new ContactGroup();
   contactGroupForm!: FormGroup<contactGroupForm>;
 
 
   constructor(
+    private snackbarService: SnackbarService,
     public service: ContactGroupService,
     public fb: FormBuilder,
     public dialogRef: MatDialogRef<contactGroupForm>,
+    
     @Inject(MAT_DIALOG_DATA) public data: {
       contactGroup: ContactGroup
     }
@@ -48,11 +47,11 @@ export class ContactGroupAddComponent implements OnInit {
     Object.assign(this.contactGroup, data.contactGroup);
   }
   ngOnInit(): void {
-   
-    this.dialogRef.updateSize('75%')
+
+    this.dialogRef.updateSize('50%')
     this.createContactGroupForm();
     this.setValue();
-   
+
   }
   createContactGroupForm() {
     this.contactGroupForm = new FormGroup<contactGroupForm>({
@@ -63,7 +62,7 @@ export class ContactGroupAddComponent implements OnInit {
     if (this.contactGroup) {
       this.contactGroupForm.patchValue({
         name: this.contactGroup.name,
-       
+
       })
     }
   }
@@ -72,22 +71,29 @@ export class ContactGroupAddComponent implements OnInit {
     this.dialogRef.close();
   }
   submit() {
-    console.log(this.contactGroupForm);
+   
     this.contactGroup.name = this.contactGroupForm.value.name as string;
-    
-
     if (this.contactGroup.id) {
-      this.service.updateContactGroup(this.contactGroup).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
+      this.service.updateContactGroup(this.contactGroup).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess("Update Successfully");
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.error);
+        }
+      });
 
     } else {
-
-      this.service.saveContactGroup(this.contactGroup).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
+      this.service.saveContactGroup(this.contactGroup).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess('Sucessfully Added');
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.error);
+        }
+      });
 
 
     }

@@ -20,6 +20,9 @@ import { ContactGroupService } from '../../Services/contact-group.service';
 import { ContactTypeService } from '../../Services/contact-type.service';
 import { ContactGroup } from '../../Models/contactGroup';
 import { ContactType } from '../../Models/contactType';
+import { ContactTypeComboComponent } from "../contact-type-combo/contact-type-combo.component";
+import { SnackbarService } from '../../Services/snackbar.service';
+import { HttpErrorResponse } from '@angular/common/http';
 @Component({
   selector: 'app-contact-landing',
   standalone: true,
@@ -35,9 +38,8 @@ import { ContactType } from '../../Models/contactType';
     MatProgressBar,
     MatPaginator,
     FormsModule,
-    MatSelectModule
-
-
+    MatSelectModule,
+    ContactTypeComboComponent
   ],
   templateUrl: './contact-landing.component.html',
   styleUrl: './contact-landing.component.css'
@@ -51,12 +53,14 @@ export class ContactLandingComponent implements OnInit {
   totalRecords: number = 0;
   contactTypes: ContactType[] = [];
   contactGroups: ContactGroup[] = [];
+  contactTypeId: number = 0;
 
   constructor(
+    private snackbarService: SnackbarService,
     private service: ContactService,
-    public typeService: ContactTypeService,
-    public groupService: ContactGroupService,
-    public dialog: MatDialog) {
+    private typeService: ContactTypeService,
+    private groupService: ContactGroupService,
+    private dialog: MatDialog) {
 
   }
 
@@ -69,22 +73,25 @@ export class ContactLandingComponent implements OnInit {
     this.getContacts();
   }
   loadTypes() {
-    this.typeService.getAll().subscribe(result => {
-      this.contactTypes = result;
-      console.log(result);
-    },
-      error => {
+    this.typeService.getAll().subscribe({
+      next: (res: any) => {
+        this.contactTypes = res;
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error.error);
       }
-    );
+    });
   }
 
   loadGroups() {
-    this.groupService.getAll().subscribe(result => {
-      this.contactGroups = result;
-    },
-      error => {
+    this.groupService.getAll().subscribe({
+      next: (res: any) => {
+        this.contactGroups = res;
+      },
+      error: (error: any) => {
+        console.log(error.message);
       }
-    );
+    });
   }
   setColumn() {
     this.displayedColumns = ['id', 'name', 'phoneNumber', 'type', 'group', 'action'];
@@ -124,43 +131,56 @@ export class ContactLandingComponent implements OnInit {
   }
 
   delete(id: number) {
-    if (id) {
+    if (id>0) {
       const dialogRef = this.dialog.open(DeleteDialogComponent, {
         position: { top: '10px' },
-        // width:'20%'
+
       });
 
       dialogRef.afterClosed().subscribe(result => {
-
         if (result) {
-          this.service.deleteContact(id).subscribe(result => {
-            this.getContacts();
-          },
-            error => console.error(error));
+          this.service.deleteContact(id).subscribe({
+            next: () => {
+              this.getContacts();
+            }, error: (error: any) => {
+              this.snackbarService.openError(error.error);
+            }
+          });
         }
       });
     }
   }
   onNameChange(event: any) {
-    if (event)
-      this.filter.name = event;
+    if (event)this.filter.name = event;
     this.getContacts();
   }
   onMobileChange(event: any) {
-    if (event)
-      this.filter.phoneNumber = event;
+    if (event)this.filter.phoneNumber = event;
     this.getContacts();
   }
-  onContactTypeChange(event: any){
-    if (event)
-      this.filter.contactTypeId = event;
+  onContactTypeFilterSelect(event: any) {
+    if (event) this.filter.contactTypeId = event;
     this.getContacts();
   }
-  onContactGroupChange(event: any){
-    if (event)
-      this.filter.contactGroupId = event;
+  onContactTypeInlineSelect(selectedId: number, contact: Contact) {
+    if (selectedId > 0) {
+      contact.contactTypeId = selectedId;
+      this.service.updateContact(contact).subscribe({
+        next: (res: any) => {
+          this.snackbarService.openSuccess("Update Successfully");
+        },
+        error: (error: HttpErrorResponse) => {
+          this.snackbarService.openError(error.error);
+        }
+      });
+    }
+
+  }
+  onContactGroupChange(event: any) {
+    if (event) this.filter.contactGroupId = event;
     this.getContacts();
   }
+
   pageChange(e: PageEvent) {
     this.filter.pageNumber = e.pageIndex + 1;
     this.filter.pageSize = e.pageSize;
@@ -169,16 +189,16 @@ export class ContactLandingComponent implements OnInit {
   }
   getContacts() {
     this.isLoading = true;
-    this.service.getContacts(this.filter).subscribe(result => {
-      this.totalRecords = result.totalItemCount;
-      this.dataSource = new MatTableDataSource(result.subset);
-      this.isLoading = false;
-      console.log(result.subset);
-    },
-      error => {
+    this.service.getContacts(this.filter).subscribe({
+      next: (res: any) => {
+        this.totalRecords = res.totalItemCount;
+        this.dataSource = new MatTableDataSource(res.subset);
+        this.isLoading = false;
+      },
+      error: (error: any) => {
         this.dataSource = new MatTableDataSource();
         this.isLoading = false;
       }
-    );
+    });
   }
 }

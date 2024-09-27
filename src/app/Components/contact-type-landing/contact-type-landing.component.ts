@@ -15,6 +15,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
+import { SnackbarService } from '../../Services/snackbar.service';
 
 @Component({
   selector: 'app-contact-type-landing',
@@ -42,7 +43,11 @@ export class ContactTypeLandingComponent implements OnInit {
   filter: ContactTypeFilter = new ContactTypeFilter();
   totalRecords: number = 0;
   isInlineEdit: boolean = false;
-  constructor(private service: ContactTypeService, public dialog: MatDialog) {
+  constructor(
+    private snackbarService: SnackbarService,
+    private service: ContactTypeService,
+    public dialog: MatDialog
+  ) {
 
   }
 
@@ -56,20 +61,24 @@ export class ContactTypeLandingComponent implements OnInit {
     this.displayedColumns = ['id', 'name', 'createdDate', 'modifiedDate', 'action'];
   }
   initFilters() {
-
     this.filter.name = "";
   }
 
   inlineEdit(event: any) {
     event.inlineEdit = true;
-    console.log(event)
+    
   }
   inlineUpdate(event: any) {
     event.inlineEdit = false;
-    this.service.updateContactType(event).subscribe(result => {
-
-    },
-      error => console.error(error));
+    this.service.updateContactType(event).subscribe({
+      next: (res: any) => {
+        this.snackbarService.openSuccess("Update Successfully");
+      },
+      error: (error: any) => {
+        this.snackbarService.openError(error.error);
+        this.getContactTypes();
+      }
+    });
   }
   add() {
     const dialogRef = this.dialog.open(ContactTypeAddComponent, {
@@ -98,19 +107,22 @@ export class ContactTypeLandingComponent implements OnInit {
   }
 
   delete(id: number) {
-    if (id) {
+    if (id > 0) {
       const dialogRef = this.dialog.open(DeleteDialogComponent, {
         position: { top: '10px' },
-        // width:'20%'
+
       });
 
       dialogRef.afterClosed().subscribe(result => {
 
         if (result) {
-          this.service.deleteContactType(id).subscribe(result => {
-            this.getContactTypes();
-          },
-            error => console.error(error));
+          this.service.deleteContactType(id).subscribe({
+            next: () => {
+              this.getContactTypes();
+            }, error: (error: any) => {
+              this.snackbarService.openError(error.error);
+            }
+          });
         }
       });
     }
@@ -129,16 +141,16 @@ export class ContactTypeLandingComponent implements OnInit {
   }
   getContactTypes() {
     this.isLoading = true;
-    this.service.getContactTypes(this.filter).subscribe(result => {
-      this.totalRecords = result.totalItemCount;
-      this.dataSource = new MatTableDataSource(result.subset);
-      this.isLoading = false;
-      console.log(result.subset);
-    },
-      error => {
+    this.service.getContactTypes(this.filter).subscribe({
+      next: (res: any) => {
+        this.totalRecords = res.totalItemCount;
+        this.dataSource = new MatTableDataSource(res.subset);
+        this.isLoading = false;
+      },
+      error: (error: any) => {
         this.dataSource = new MatTableDataSource();
         this.isLoading = false;
       }
-    );
+    });
   }
 }

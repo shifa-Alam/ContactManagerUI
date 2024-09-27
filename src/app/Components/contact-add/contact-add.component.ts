@@ -3,8 +3,7 @@ import { FormGroup, FormBuilder, FormControl, Validators, ReactiveFormsModule } 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Contact } from '../../Models/contact';
 import { ContactService } from '../../Services/contact.service';
-import {   MatFormFieldModule } from '@angular/material/form-field';
-import { MatOption } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ContactTypeService } from '../../Services/contact-type.service';
 import { ContactGroupService } from '../../Services/contact-group.service';
 import { ContactType } from '../../Models/contactType';
@@ -12,8 +11,9 @@ import { ContactGroup } from '../../Models/contactGroup';
 import { CommonModule } from '@angular/common';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButton, MatButtonModule } from '@angular/material/button';
-import {MatDialogModule} from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { SnackbarService } from '../../Services/snackbar.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 
@@ -35,9 +35,8 @@ export interface contactFormGroup {
     MatSelectModule,
     MatButtonModule
 
-    
-  ],
 
+  ],
   templateUrl: './contact-add.component.html',
   styleUrl: './contact-add.component.css'
 })
@@ -45,10 +44,11 @@ export class ContactAddComponent implements OnInit {
 
   contact: Contact = new Contact();
   contactForm!: FormGroup<contactFormGroup>;
-  contactTypes: ContactType[]=[];
-  contactGroups: ContactGroup[]=[];
+  contactTypes: ContactType[] = [];
+  contactGroups: ContactGroup[] = [];
 
   constructor(
+    private snackbarService: SnackbarService,
     public service: ContactService,
     public typeService: ContactTypeService,
     public groupService: ContactGroupService,
@@ -66,7 +66,7 @@ export class ContactAddComponent implements OnInit {
     this.dialogRef.updateSize('75%')
     this.createContactForm();
     this.setValue();
-   
+
   }
   createContactForm() {
     this.contactForm = new FormGroup<contactFormGroup>({
@@ -91,45 +91,58 @@ export class ContactAddComponent implements OnInit {
     this.dialogRef.close();
   }
   submit() {
-    console.log(this.contactForm);
+
     this.contact.name = this.contactForm.value.name as string;
     this.contact.phoneNumber = this.contactForm.value.phoneNumber as string;
     this.contact.contactTypeId = this.contactForm.value.contactTypeId as number;
     this.contact.contactGroupId = this.contactForm.value.contactGroupId as number;
 
     if (this.contact.id) {
-      this.service.updateContact(this.contact).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
+      this.service.updateContact(this.contact).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess("Update Successfully");
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.message);
+        }
+      });
 
     } else {
 
-      this.service.saveContact(this.contact).subscribe(result => {
-        this.dialogRef.close();
-      },
-        error => console.error(error));
+      this.service.saveContact(this.contact).subscribe({
+        next: (res: any) => {
+          this.dialogRef.close();
+          this.snackbarService.openSuccess('Sucessfully Added');
+        },
+        error: (error: any) => {
+          this.snackbarService.openError(error.message);
+        }
+      });
 
 
     }
   }
   loadTypes() {
-    this.typeService.getAll().subscribe(result => {
-      this.contactTypes = result;
-      console.log(result);
-    },
-      error => {
+    this.typeService.getAll().subscribe({
+      next: (res: any) => {
+        this.contactTypes = res;
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error.error);
       }
-    );
+    });
   }
 
   loadGroups() {
-    this.groupService.getAll().subscribe(result => {
-      this.contactGroups = result;
-    },
-      error => {
+    this.groupService.getAll().subscribe({
+      next: (res: any) => {
+        this.contactGroups = res;
+      },
+      error: (error: HttpErrorResponse) => {
+        console.log(error.error);
       }
-    );
+    });
   }
 }
 
