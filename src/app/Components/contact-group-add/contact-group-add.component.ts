@@ -77,7 +77,7 @@ export class ContactGroupAddComponent implements OnInit {
       this.service.updateContactGroup(this.contactGroup).subscribe({
         next: (res: any) => {
           this.dialogRef.close();
-          this.snackbarService.openSuccess("Update Successfully");
+          this.snackbarService.openSuccess("Updated Successfully");
         },
         error: (error: any) => {
           this.snackbarService.openError(error.error);
@@ -88,7 +88,7 @@ export class ContactGroupAddComponent implements OnInit {
       this.service.saveContactGroup(this.contactGroup).subscribe({
         next: (res: any) => {
           this.dialogRef.close();
-          this.snackbarService.openSuccess('Sucessfully Added');
+          this.snackbarService.openSuccess(' Save Sucessfully');
         },
         error: (error: any) => {
           this.snackbarService.openError(error.error);

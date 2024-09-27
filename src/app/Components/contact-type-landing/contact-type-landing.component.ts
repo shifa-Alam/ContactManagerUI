@@ -72,7 +72,7 @@ export class ContactTypeLandingComponent implements OnInit {
     event.inlineEdit = false;
     this.service.updateContactType(event).subscribe({
       next: (res: any) => {
-        this.snackbarService.openSuccess("Update Successfully");
+        this.snackbarService.openSuccess("Updated Successfully");
       },
       error: (error: any) => {
         this.snackbarService.openError(error.error);
@@ -118,6 +118,7 @@ export class ContactTypeLandingComponent implements OnInit {
         if (result) {
           this.service.deleteContactType(id).subscribe({
             next: () => {
+              this.snackbarService.openSuccess("Deleted Successfully");
               this.getContactTypes();
             }, error: (error: any) => {
               this.snackbarService.openError(error.error);

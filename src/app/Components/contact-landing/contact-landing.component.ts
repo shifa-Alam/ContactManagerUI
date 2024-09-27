@@ -141,6 +141,7 @@ export class ContactLandingComponent implements OnInit {
         if (result) {
           this.service.deleteContact(id).subscribe({
             next: () => {
+              this.snackbarService.openSuccess("Deleted Successfully");
               this.getContacts();
             }, error: (error: any) => {
               this.snackbarService.openError(error.error);
@@ -167,7 +168,7 @@ export class ContactLandingComponent implements OnInit {
       contact.contactTypeId = selectedId;
       this.service.updateContact(contact).subscribe({
         next: (res: any) => {
-          this.snackbarService.openSuccess("Update Successfully");
+          this.snackbarService.openSuccess("Updated Successfully");
         },
         error: (error: HttpErrorResponse) => {
           this.snackbarService.openError(error.error);

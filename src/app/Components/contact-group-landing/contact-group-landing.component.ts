@@ -105,6 +105,7 @@ export class ContactGroupLandingComponent implements OnInit {
         if (result) {
           this.service.deleteContactGroup(id).subscribe({
             next: () => {
+              this.snackbarService.openSuccess("Deleted Successfully");
               this.getContactGroups();
             }, error: (error: any) => {
               this.snackbarService.openError(error.error);

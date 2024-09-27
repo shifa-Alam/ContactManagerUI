@@ -80,7 +80,7 @@ export class ContactTypeAddComponent implements OnInit {
       this.service.updateContactType(this.contactType).subscribe({
         next: (res: any) => {
           this.dialogRef.close();
-          this.snackbarService.openSuccess("Update Successfully");
+          this.snackbarService.openSuccess("Updated Successfully");
         },
         error: (error: any) => {
           this.snackbarService.openError(error.error);
@@ -91,7 +91,7 @@ export class ContactTypeAddComponent implements OnInit {
       this.service.saveContactType(this.contactType).subscribe({
         next: (res: any) => {
           this.dialogRef.close();
-          this.snackbarService.openSuccess('Sucessfully Added');
+          this.snackbarService.openSuccess('  Save Sucessfully');
         },
         error: (error: any) => {
           this.snackbarService.openError(error.error);

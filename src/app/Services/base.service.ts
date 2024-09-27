@@ -8,8 +8,8 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class BaseService {
-  baseUrl = "http://localhost:5241/api/"; // local
-  // baseUrl = "http://103.204.80.228:2030/api/"; //server
+  // baseUrl = "http://localhost:5241/api/"; // local
+  baseUrl = "http://103.204.80.228:2030/api/"; //server
 
   constructor(private http: HttpClient) { }
   public getRequest(subUrl: string, params?: any) {
